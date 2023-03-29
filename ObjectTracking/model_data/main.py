@@ -19,19 +19,40 @@ def modelData(videoPath, model):
         modelPath = os.path.join("model_data", "frozen_inference_graph.pb")
         classesPath = os.path.join("model_data", "coco.names")
         modelType = 'SSD'
-	
-        detector = Detector(vPath, configPath, modelPath, classesPath, modelType)
+        confThreshold = conf_slider_var
+        bValue = True
+        detector = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, bValue)
         detector.onVideo()
 	
     elif getModel(model) == "YOLOv3":
         configPath = os.path.join("model_data", "yolov3.cfg")
         modelPath = os.path.join("model_data", "yolov3.weights")
         classesPath = os.path.join("model_data", "cocoYOLO.names")
-        modelType = 'YOLO'
+        modelType = 'YOLOv3'
+        bValue = True
+        confThreshold = conf_slider_var
+        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, bValue)
+        detector4.onVideo()
+
+    elif getModel(model) == "Reflective":
+        configPath = os.path.join("model_data", "reflective.cfg")
+        modelPath = os.path.join("model_data", "reflective.weights")
+        classesPath = os.path.join("model_data", "reflective.names")
+        modelType = 'Reflective'
+        confThreshold = conf_slider_var
+        bValue = True
+        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, bValue)
+        detector4.onVideo()
 	
-        detector2 = Detector(vPath, configPath, modelPath, classesPath, modelType)
-        detector2.onVideo()
-	
+    elif getModel(model) == "YOLOv3-tiny":
+        configPath = os.path.join("model_data", "yolov3-tiny.cfg")
+        modelPath = os.path.join("model_data", "yolov3-tiny.weights")
+        classesPath = os.path.join("model_data", "cocoYOLO.names")
+        modelType = 'YOLOv3-tiny'
+        confThreshold = conf_slider_var
+        bValue = False
+        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, bValue)
+        detector4.onVideo()
     
 def clickButton():
 	videoPath = entryBox.get()
@@ -79,8 +100,28 @@ root.appearance_mode_optionemenu.pack(fill="x", padx=10, pady=(0, 10))
 root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Model", font=("Helvetica", 14), pady=10)
 root.sidebar_frame.model_label.pack(fill="x")
 
-model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3"], command=lambda value: getModel(value))
+model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Reflective"], command=lambda value: getModel(value))
 model_menu.pack(fill="x", padx=10, pady=(0, 10))
+
+## CHOOSE THE CONFIDENCE IN SIDE BAR
+conf_label_var = customtkinter.StringVar()
+conf_label = customtkinter.CTkLabel(root.sidebar_frame, textvariable=conf_label_var, font=("Helvetica", 14), pady=10)
+conf_label.pack(padx=10, pady=(0, 10))
+
+conf_slider_var = customtkinter.DoubleVar(value=0.4)
+conf_slider = customtkinter.CTkSlider(root.sidebar_frame, from_=0.1, to=0.99, variable=conf_slider_var, command=lambda value: conf_slider_var.set(float(value)))
+conf_slider.pack(padx=10, pady=(0,10))
+
+# set the label text to the initial value of the slider
+conf_label_var.set(f"Confidence Value: {conf_slider_var.get():.2f}")
+
+# update the label text whenever the slider value changes
+conf_slider_var.trace_add("write", lambda name, index, mode, var=conf_slider_var, lbl=conf_label_var: lbl.set(f"Confidence Value: {var.get():.2f}"))
+
+## CHOOSE BEAUTIFY IN SIDE BAR
+root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Beautify", font=("Helvetica", 14), pady=10)
+root.sidebar_frame.model_label.pack(fill="x")
+
 
 ## TAB SETTINGS
 tabview = customtkinter.CTkTabview(root, width=250)
@@ -109,6 +150,7 @@ label_tab_2.grid(row=0, column=0, padx=20, pady=20, sticky="")
 if __name__ == '__main__':
 	root.title('Object Tracker GUI')
 	root.mainloop()
+
 
 
 
