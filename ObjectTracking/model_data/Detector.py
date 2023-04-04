@@ -6,7 +6,7 @@ import time
 np.random.seed(20)
 
 class Detector:
-	def __init__(self, videoPath, configPath, modelPath, classesPath, modelType, confThreshold, bValue):
+	def __init__(self, videoPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue):
 
 		# Initialize instance variables
 		self.videoPath = videoPath
@@ -15,15 +15,27 @@ class Detector:
 		self.classesPath = classesPath
 		self.modelType = modelType
 		self.confThreshold = confThreshold
+		self.sThreshold = sThreshold
+		self.nmsThreshold = nmsThreshold
+		self.batchSize = batchSize
+		self.inputImageSize = inputImageSize
 		self.bValue = bValue
 
 		# Load the DNN model from the specified paths
 		self.net = cv2.dnn_DetectionModel(self.modelPath, self.configPath)
 
 		# Set the input size for the model and configure the input
-		self.net.setInputSize(320, 320)		#  lowest fps 320, 320 // 224, 224 // 128, 128 highest fps
-		self.net.setInputScale(1.0/127.5)
-		self.net.setInputMean((127.5, 127.5, 127.5))
+		inputSize = self.inputImageSize.get()
+
+		self.net.setInputSize(int(inputSize),int(inputSize))		#  lowest fps 320, 320 // 224, 224 // 128, 128 highest fps
+		if self.modelType == 'SSD':
+			self.net.setInputScale(1.0/127.5)	# 1.0/127.5 or 98/25000
+			self.net.setInputMean((127.5,127.5,127.5))	# 0,0,0 or 127.5,127.5,127.5
+		
+		elif self.modelType == 'YOLOv3' or 'YOLOv3-tiny':
+			self.net.setInputScale(98/25000)	# 1.0/127.5 or 98/25000
+			self.net.setInputMean((0,0,0))	# 0,0,0 or 127.5,127.5,127.5
+
 		self.net.setInputSwapRB(True)
 
 		# Call the readClasses function to load the class labels and colors
@@ -52,6 +64,113 @@ class Detector:
 
 		#print(self.classesList)
 	
+	def onVideoBatch(self):
+		cap = cv2.VideoCapture(self.videoPath)
+
+		# Open the video file
+		if (cap.isOpened()==False):
+			print("Error")
+			return
+		
+		# Read the first frame from the video
+		#(success, image) = cap.read()
+
+		batch_size = self.batchSize.get() # define the batch size
+
+		frame_buffer = []
+		while True:
+    		# read a batch of frames from the input source
+			batch = []
+			for i in range(batch_size):
+				success, image = cap.read()
+				if not success:
+					break
+				batch.append(image)
+			
+			if not batch:
+				break
+
+			results = []
+			for image in batch:
+				classLabelIDs, confidences, bboxs = self.net.detect(image, self.confThreshold.get())
+				# convert the bounding boxes and confidence values to lists
+				bboxs = list(bboxs)
+				confidences = list(np.array(confidences).reshape(1, -1)[0])
+				confidences = list(map(float, confidences))
+				bboxIdx = cv2.dnn.NMSBoxes(bboxs, confidences, self.sThreshold.get(), self.nmsThreshold.get())
+				results.append((classLabelIDs, confidences, bboxs, bboxIdx))
+
+			# Draws bounding boxes around the detected objects in the image, along with the class labels and confidence scores.
+			for i in range(len(batch)):
+				classLabelIDs, confidences, bboxs, bboxIdx = results[i]
+				if bboxIdx is not None and len(bboxIdx) != 0:
+					for j in bboxIdx:
+						bbox = bboxs[j]
+						classConfidence = confidences[j]
+						classLabelID = classLabelIDs[j]
+						classLabel = self.classesList[classLabelID]
+						classColor = [int(c) for c in self.colorList[classLabelID]]
+
+						displayText = "{}:{:.2f}".format(classLabel, classConfidence)
+
+						x,y,w,h = bbox
+						if self.bValue.get() == "Enabled":
+							cv2.rectangle(batch[i], (x,y), (x+w, y+h), color = classColor, thickness = 1)
+							cv2.putText(batch[i], displayText, (x, y-10), cv2.FONT_HERSHEY_PLAIN, 1, classColor, 2)
+						
+							lineWidth = min(int(w * .3), int(h * .3))
+
+							# TOP LEFT CORNER OF BOUNDING BOX
+							cv2.line(batch[i], (x,y), (x+lineWidth,y), classColor, thickness=4)
+							cv2.line(batch[i], (x,y), (x,y+lineWidth), classColor, thickness=4)
+
+							# TOP RIGHT CORNER OF BOUNDING BOX
+							cv2.line(batch[i], (x+w,y), (x+w-lineWidth,y), classColor, thickness=4)
+							cv2.line(batch[i], (x+w,y), (x+w,y+lineWidth), classColor, thickness=4)
+
+							# BOTTOM LEFT CORNER OF BOUNDING BOX
+							cv2.line(batch[i], (x,y+h), (x+lineWidth,y+h), classColor, thickness=4)
+							cv2.line(batch[i], (x,y+h), (x,y+h-lineWidth), classColor, thickness=4)
+
+							# BOTTOM RIGHT CORNER OF BOUNDING BOX
+							cv2.line(batch[i], (x+w,y+h), (x+w-lineWidth,y+h), classColor, thickness=4)
+							cv2.line(batch[i], (x+w,y+h), (x+w,y+h-lineWidth), classColor, thickness=4)
+						else:
+							cv2.rectangle(batch[i], (x,y), (x+w, y+h), color = classColor, thickness = 3)
+							cv2.putText(batch[i], displayText, (x, y-10), cv2.FONT_HERSHEY_PLAIN, 1, classColor, 2)
+							lineWidth = min(int(w * .3), int(h * .3))
+
+				#cv2.putText(batch[i], "FPS: " + str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0), 2)
+
+				#frame_buffer += batch
+				frame_buffer.append(batch[i])
+		
+		for frame in frame_buffer:
+			cv2.imshow("Result", frame)
+			cv2.waitKey(20)
+
+			# CHECKS TO SEE IF WEBCAM IS ENABLED
+			if self.videoPath == 0:
+				key = cv2.waitKey(1) & 0xFF
+				if key == ord("q"):
+					break
+				
+			# CHECKS TO SEE IF INPUT FILE IS VIDEO
+			elif self.videoPath.endswith('.mp4'):
+				key = cv2.waitKey(1) & 0xFF
+				if key == ord("q"):
+					break
+			
+			# INPUT FILE IS A PICTURE
+			else:
+				key = cv2.waitKey(0) & 0xFF
+				if key == ord("q"):
+					break
+				
+		cv2.destroyAllWindows()
+		cap.release()
+
+
 	# Function to run object detection on a video
 	def onVideo(self):
 		cap = cv2.VideoCapture(self.videoPath)
@@ -81,17 +200,7 @@ class Detector:
 			bboxs = list(bboxs)
 			confidences = list(np.array(confidences).reshape(1, -1)[0])
 			confidences = list(map(float, confidences))
-
-			# Performs non-maximum suppression(NMS) on the detected bounding boxes to remove overlapping boxes with lower confidence scores.
-			# The default values for score_threshold and nms_threshold in many pre-trained object detection models are often set 
-			# to 0.5 and 0.45, respectively. These values are generally a good starting point and should work well for many applications. 
-			# However, the optimal values of these parameters can vary depending on the specific use case and the characteristics 
-			# of the objects being detected. In some cases, you may need to adjust these parameters to improve the accuracy of the 
-			# object detection. It's also worth noting that changing the values of these parameters can have trade-offs between 
-			# accuracy and speed. Increasing the score_threshold can lead to more accurate detections, but may also result 
-			# in missed detections, while decreasing the nms_threshold can lead to more overlapping bounding boxes and 
-			# slower processing times.
-			bboxIdx = cv2.dnn.NMSBoxes(bboxs, confidences, score_threshold = 0.5, nms_threshold = 0.45)
+			bboxIdx = cv2.dnn.NMSBoxes(bboxs, confidences, self.sThreshold.get(), self.nmsThreshold.get())
 
 			# Draws bounding boxes around the detected objects in the image, along with the class labels and confidence scores.
 			if len(bboxIdx) != 0:
@@ -112,7 +221,7 @@ class Detector:
 					
 					lineWidth = min(int(w * .3), int(h * .3))
 
-					if self.bValue == True:
+					if self.bValue.get() == "Enabled":
 						# TOP LEFT CORNER OF BOUNDING BOX
 						cv2.line(image, (x,y), (x+lineWidth,y), classColor, thickness=4)
 						cv2.line(image, (x,y), (x,y+lineWidth), classColor, thickness=4)
@@ -128,6 +237,10 @@ class Detector:
 						# BOTTOM RIGHT CORNER OF BOUNDING BOX
 						cv2.line(image, (x+w,y+h), (x+w-lineWidth,y+h), classColor, thickness=4)
 						cv2.line(image, (x+w,y+h), (x+w,y+h-lineWidth), classColor, thickness=4)
+					else:
+						cv2.rectangle(image, (x,y), (x+w, y+h), color = classColor, thickness = 3)
+						cv2.putText(image, displayText, (x, y-10), cv2.FONT_HERSHEY_PLAIN, 1, classColor, 2)
+						lineWidth = min(int(w * .3), int(h * .3))
 
 			cv2.putText(image, "FPS: " + str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0), 2)
 			cv2.imshow("Result", image)
