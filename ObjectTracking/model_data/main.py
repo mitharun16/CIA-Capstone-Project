@@ -22,21 +22,31 @@ def modelData(videoPath, model):
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
+        batchSize = batchSize_slider_var
+        inputImageSize = inputImageSize_var
         bValue = bValue_var
-        detector = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, bValue)
-        detector.onVideo()
+        detector = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
+        if batchValue_var.get() == "Disabled":
+            detector.onVideo()
+        else:
+              detector.onVideoBatch()
 	
     elif getModel(model) == "YOLOv3":
         configPath = os.path.join("model_data", "yolov3.cfg")
         modelPath = os.path.join("model_data", "yolov3.weights")
         classesPath = os.path.join("model_data", "cocoYOLO.names")
         modelType = 'YOLOv3'
-        bValue = bValue_var
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
-        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, bValue)
-        detector4.onVideo()
+        batchSize = batchSize_slider_var
+        inputImageSize = inputImageSize_var
+        bValue = bValue_var
+        detector2 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
+        if batchValue_var.get() == "Disabled":
+            detector2.onVideo()
+        else:
+              detector2.onVideoBatch()
 
     elif getModel(model) == "Reflective":
         configPath = os.path.join("model_data", "reflective.cfg")
@@ -46,9 +56,31 @@ def modelData(videoPath, model):
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
+        batchSize = batchSize_slider_var
+        inputImageSize = inputImageSize_var
         bValue = bValue_var
-        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, bValue)
-        detector4.onVideo()
+        detector3 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
+        if batchValue_var.get() == "Disabled":
+            detector3.onVideo()
+        else:
+              detector3.onVideoBatch()
+	
+    elif getModel(model) == "Pattern":
+        configPath = os.path.join("model_data", "yolov3-tiny.cfg")
+        modelPath = os.path.join("model_data", "yolov3-tiny.weights")
+        classesPath = os.path.join("model_data", "cocoYOLO.names")
+        modelType = 'Pattern'
+        confThreshold = conf_slider_var
+        sThreshold = sThreshold_slider_var
+        nmsThreshold = nmsThreshold_slider_var
+        batchSize = batchSize_slider_var
+        inputImageSize = inputImageSize_var
+        bValue = bValue_var
+        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
+        if batchValue_var.get() == "Disabled":
+            detector4.onVideo()
+        else:
+              detector4.onVideoBatch()
 	
     elif getModel(model) == "YOLOv3-tiny":
         configPath = os.path.join("model_data", "yolov3-tiny.cfg")
@@ -58,9 +90,14 @@ def modelData(videoPath, model):
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
+        batchSize = batchSize_slider_var
+        inputImageSize = inputImageSize_var
         bValue = bValue_var
-        detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, bValue)
-        detector4.onVideo()
+        detector5 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
+        if batchValue_var.get() == "Disabled":
+            detector5.onVideo()
+        else:
+              detector5.onVideoBatch()
     
 def clickButton():
 	videoPath = entryBox.get()
@@ -87,13 +124,12 @@ def getModel(selected_value):
 	print(f"Selected model: {selected_value}")
 	return selected_value
 
-def getBeautify(selected_value):
-	print(f"Beautify Selected (Yes/No): {selected_value}")
-	global beautify_value
-	beautify_value = selected_value
+def getInputSize(selected_value):
+	print(f"Input Size: {selected_value}")
+	return selected_value
 
 ## WINDOW SETTINGS
-root.geometry(f"{1190}x{620}")
+root.geometry(f"{1190}x{720}")
 root.grid_columnconfigure(0, weight=1)
 root.grid_columnconfigure((2, 3), weight=1)
 root.grid_rowconfigure((0,1,2), weight=1)
@@ -114,14 +150,36 @@ root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text
 root.sidebar_frame.model_label.pack(fill="x")
 
 bValue_var = customtkinter.StringVar()
-beautify_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, variable=bValue_var, values=["Yes", "No"], command=lambda value: bValue_var.set(value))
+beautify_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, variable=bValue_var, values=["Enabled", "Disabled"], command=lambda value: bValue_var.set(value))
 beautify_menu.pack(fill="x", padx=10, pady=(0, 10))
+beautify_menu.set("Disabled")
+
+## CHOOSE BATCH PROCESSING IN SIDE BAR
+root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Batch Processing", font=("Helvetica", 14), pady=10)
+root.sidebar_frame.model_label.pack(fill="x")
+
+batchValue_var = customtkinter.StringVar()
+batch_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, variable=batchValue_var, values=["Enabled", "Disabled"], command=lambda value: batchValue_var.set(value))
+batch_menu.pack(fill="x", padx=10, pady=(0, 10))
+batch_menu.set("Disabled")
+
+## CHOOSE BATCH PROCESSING SIZE
+batchSize_label_var = customtkinter.StringVar()
+batchSize_label = customtkinter.CTkLabel(root.sidebar_frame, textvariable=batchSize_label_var, font=("Helvetica", 14), pady=10)
+batchSize_label.pack(padx=10, pady=(0, 10))
+
+batchSize_slider_var = customtkinter.IntVar(value=1)
+batchSize_slider = customtkinter.CTkSlider(root.sidebar_frame, from_=1, to=64, variable=batchSize_slider_var, command=lambda value: batchSize_slider_var.set(int(value)))
+batchSize_slider.pack(padx=10, pady=(0,10))
+
+batchSize_label_var.set(f"Batch Size: {batchSize_slider_var.get():.0f}")
+batchSize_slider_var.trace_add("write", lambda name, index, mode, var=batchSize_slider_var, lbl=batchSize_label_var: lbl.set(f"Batch Size: {var.get():.0f}"))
 
 ## CHOOSE THE MODEL IN SIDE BAR
 root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Model", font=("Helvetica", 14), pady=10)
 root.sidebar_frame.model_label.pack(fill="x")
 
-model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Reflective"], command=lambda value: getModel(value))
+model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Reflective", "Pattern"], command=lambda value: getModel(value))
 model_menu.pack(fill="x", padx=10, pady=(0, 10))
 
 ## CHOOSE THE CONFIDENCE IN SIDE BAR
@@ -169,13 +227,15 @@ nmsThreshold_label_var.set(f"NMS Threshold: {nmsThreshold_slider_var.get():.2f}"
 # update the label text whenever the slider value changes
 nmsThreshold_slider_var.trace_add("write", lambda name, index, mode, var=nmsThreshold_slider_var, lbl=nmsThreshold_label_var: lbl.set(f"NMS Threshold: {var.get():.2f}"))
 
-## CHOOSE INPUT IMAGE SIZE IN SIDE BAR
-root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Batch Size", font=("Helvetica", 14), pady=10)
-root.sidebar_frame.model_label.pack(fill="x")
 
 ## CHOOSE INPUT IMAGE SIZE IN SIDE BAR
 root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Input Image Size", font=("Helvetica", 14), pady=10)
 root.sidebar_frame.model_label.pack(fill="x")
+
+inputImageSize_var = customtkinter.StringVar()
+inputImageSize_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, variable=inputImageSize_var, values=["128", "224", "256", "320", "416", "512", "608", "832"], command=lambda value: getInputSize(value))
+inputImageSize_menu.pack(fill="x", padx=10, pady=(0, 10))
+inputImageSize_menu.set("128")
 
 
 ## TAB SETTINGS
@@ -201,12 +261,17 @@ entryBox.grid(row=1, column=0, padx=20, pady=(20, 20), sticky="")
 buttonClicked = False
 myButton = customtkinter.CTkButton(tabview.tab("Object Tracking Through Webcam"), text="Press Button to Enable Webcam", command=clickButtonWebcam)
 myButton.grid(row=2, column=0, padx=20, pady=(20, 10), sticky="")
-label_tab_3 = customtkinter.CTkLabel(tabview.tab("Object Tracking Through Webcam"), text="Press Q to Stop Webcam")
+label_tab_3 = customtkinter.CTkLabel(tabview.tab("Object Tracking Through Webcam"), text="Press Q to Stop Webcam\nMust Have Batch Processing Disabled")
 label_tab_3.grid(row=0, column=0, padx=20, pady=20, sticky="")
 
 ## CREATE TABVIEW2 FOR RECOMMENDED SETTINGS
 tabview2 = customtkinter.CTkTabview(root, width=900, height = 300)
 tabview2.grid(row=1, column=2, padx=20, pady=(20, 0), sticky="")
+
+## Reflective recommended settings
+tabview2.add("Our Project")
+reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Our Project"), text="Our Project", font=("Helvetica", 14), pady=10, padx=10)
+reflective_settings_label.pack(fill="x")
 
 ## SSD Mobilenet recommended settings
 tabview2.add("SSD MobileNet")
@@ -228,8 +293,13 @@ tabview2.add("Reflective")
 reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Reflective"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
 reflective_settings_label.pack(fill="x")
 
-tabview2.add("Questions")
+## Reflective recommended settings
+tabview2.add("Pattern")
+reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Pattern"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
+reflective_settings_label.pack(fill="x")
 
+## ----------------------- QUESTIONS TAB SETTINGS-----------------------
+tabview2.add("Questions")
 # Create the questions frame
 questions_canvas = Canvas(tabview2.tab("Questions"))
 questions_frame = customtkinter.CTkFrame(questions_canvas)
@@ -241,11 +311,7 @@ questions_scrollbar.pack(side="right", fill="y")
 questions_canvas.pack(side="left", fill="both", expand=True)
 questions_canvas.create_window((0, 0), window=questions_frame, anchor="nw")
 
-# Set the scroll region to limit scrolling range
-#questions_canvas.configure(scrollregion=questions_canvas.bbox("all"))
-
 questions_canvas.bind('<Configure>', lambda e: questions_canvas.configure(scrollregion= questions_canvas.bbox("all"))) # ALLOWS USER TO SCROLL UP AND DOWN
-# Add some widgets to the questions frame
 
 questions_text = ["Confidence Value: This is the minimum probability score that an object must have in order to be considered a valid detection.A higher value will result in fewer false positives, but may also miss some true positives. A lower value will result in more detections, but may also increase the number of false positives.",
 		  "Score Threshold: Increasing the score_threshold can lead to more accurate detections, but may also result in missed detections",
@@ -263,7 +329,6 @@ for i in range(len(questions_text)):
 if __name__ == '__main__':
 	root.title('Object Tracker GUI')
 	root.mainloop()
-
 
 
 
