@@ -29,7 +29,7 @@ def modelData(videoPath, model):
         if batchValue_var.get() == "Disabled":
             detector.onVideo()
         else:
-              detector.onVideoBatch()
+            detector.onVideoBatch()
 	
     elif getModel(model) == "YOLOv3":
         configPath = os.path.join("model_data", "yolov3.cfg")
@@ -46,13 +46,13 @@ def modelData(videoPath, model):
         if batchValue_var.get() == "Disabled":
             detector2.onVideo()
         else:
-              detector2.onVideoBatch()
+            detector2.onVideoBatch()
 
-    elif getModel(model) == "Reflective":
+    elif getModel(model) == "Cones and Cars":
         configPath = os.path.join("model_data", "reflective.cfg")
         modelPath = os.path.join("model_data", "reflective.weights")
         classesPath = os.path.join("model_data", "reflective.names")
-        modelType = 'Reflective'
+        modelType = 'Cones and Cars'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
@@ -65,11 +65,11 @@ def modelData(videoPath, model):
         else:
               detector3.onVideoBatch()
 	
-    elif getModel(model) == "Pattern":
-        configPath = os.path.join("model_data", "yolov3-tiny.cfg")
-        modelPath = os.path.join("model_data", "yolov3-tiny.weights")
-        classesPath = os.path.join("model_data", "cocoYOLO.names")
-        modelType = 'Pattern'
+    elif getModel(model) == "Backpack":
+        configPath = os.path.join("model_data", "yolov3-ourmodel.cfg")
+        modelPath = os.path.join("model_data", "yolov3_training_last.weights")
+        classesPath = os.path.join("model_data", "ourmodel.names")
+        modelType = 'Backpack'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
@@ -100,12 +100,12 @@ def modelData(videoPath, model):
               detector5.onVideoBatch()
     
 def clickButton():
-	videoPath = entryBox.get()
-	if (videoPath == "0"):
-		videoPath = 0
-
-	model = model_menu.get()
-	modelData(videoPath, model)
+    model = model_menu.get()
+    videoPath = filedialog.askopenfilename()
+    
+    if videoPath:
+        # Process the video file with OpenCV
+        modelData(videoPath, model)
 
 def clickButtonWebcam():
 	global buttonClicked
@@ -179,7 +179,7 @@ batchSize_slider_var.trace_add("write", lambda name, index, mode, var=batchSize_
 root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Model", font=("Helvetica", 14), pady=10)
 root.sidebar_frame.model_label.pack(fill="x")
 
-model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Reflective", "Pattern"], command=lambda value: getModel(value))
+model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Cones and Cars", "Backpack"], command=lambda value: getModel(value))
 model_menu.pack(fill="x", padx=10, pady=(0, 10))
 
 ## CHOOSE THE CONFIDENCE IN SIDE BAR
@@ -241,21 +241,21 @@ inputImageSize_menu.set("128")
 ## TAB SETTINGS
 tabview = customtkinter.CTkTabview(root, width=250)
 tabview.grid(row=0, column=2, padx=20, pady=(20, 0), sticky="")
-tabview.add("Object Tracking Through Input File")
+tabview.add("Object Tracking Through File")
 tabview.add("Object Tracking Through Webcam")
-tabview.tab("Object Tracking Through Input File").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+tabview.tab("Object Tracking Through File").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
 tabview.tab("Object Tracking Through Webcam").grid_columnconfigure(0, weight=1)
 
 ## BUTTON FOR OBJECT TRACKING THROUGH INPUT FILE
-myButton = customtkinter.CTkButton(tabview.tab("Object Tracking Through Input File"), text="Enter", command=clickButton)
-myButton.grid(row=2, column=0, padx=20, pady=(20, 10), sticky="")
+browse_button = customtkinter.CTkButton(tabview.tab("Object Tracking Through File"), text="Browse", command=clickButton)
+browse_button.grid(row=1, column=0, padx=20, pady=(20, 20), sticky="")
 
-label_tab_2 = customtkinter.CTkLabel(tabview.tab("Object Tracking Through Input File"), text="Press Q to Stop The Video")
+label_tab_2 = customtkinter.CTkLabel(tabview.tab("Object Tracking Through File"), text="Press Q to Stop The Video")
 label_tab_2.grid(row=0, column=0, padx=20, pady=20, sticky="")
 
 ## ENTRY FOR OBJECT TRACKING THROUGH INPUT FILE
-entryBox = customtkinter.CTkEntry(tabview.tab("Object Tracking Through Input File"), placeholder_text="Path To File", width=300)
-entryBox.grid(row=1, column=0, padx=20, pady=(20, 20), sticky="")
+#entryBox = customtkinter.CTkEntry(tabview.tab("Object Tracking Through Input File"), placeholder_text="Path To File", width=300)
+#entryBox.grid(row=1, column=0, padx=20, pady=(20, 20), sticky="")
 
 ## BUTTON FOR OBJECT TRACKING THROUGH WEBCAM
 buttonClicked = False
@@ -289,13 +289,13 @@ yolov3tiny_settings_label = customtkinter.CTkLabel(tabview2.tab("YOLOv3-tiny"), 
 yolov3tiny_settings_label.pack(fill="x")
 
 ## Reflective recommended settings
-tabview2.add("Reflective")
-reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Reflective"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
+tabview2.add("Cones and Cars")
+reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Cones and Cars"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
 reflective_settings_label.pack(fill="x")
 
 ## Reflective recommended settings
-tabview2.add("Pattern")
-reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Pattern"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
+tabview2.add("Backpack")
+reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Backpack"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
 reflective_settings_label.pack(fill="x")
 
 ## ----------------------- QUESTIONS TAB SETTINGS-----------------------
@@ -329,6 +329,7 @@ for i in range(len(questions_text)):
 if __name__ == '__main__':
 	root.title('Object Tracker GUI')
 	root.mainloop()
+
 
 
 
