@@ -271,6 +271,7 @@ class Detector:
 
 			cv2.putText(image, "FPS: " + str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0), 2)
 			cv2.imshow("Result", image)
+			cv2.waitKey(20)
 			#cv2.imshow("Mask", mask)
 
 			# CHECKS TO SEE IF WEBCAM IS ENABLED
