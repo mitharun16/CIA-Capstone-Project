@@ -8,6 +8,8 @@ customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 root = customtkinter.CTk()
 
+root_folder = os.path.dirname(os.path.abspath(__file__))
+print(root_folder)
 
 def modelData(videoPath, model):
     vPath = videoPath
@@ -16,9 +18,9 @@ def modelData(videoPath, model):
     classesPath = None
     
     if getModel(model) == "SSD MobileNet":
-        configPath = os.path.join("model_data", "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
-        modelPath = os.path.join("model_data", "frozen_inference_graph.pb")
-        classesPath = os.path.join("model_data", "coco.names")
+        configPath = os.path.join(root_folder, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
+        modelPath = os.path.join(root_folder, "frozen_inference_graph.pb")
+        classesPath = os.path.join(root_folder, "coco.names")
         modelType = 'SSD'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
@@ -33,9 +35,9 @@ def modelData(videoPath, model):
             detector.onVideoBatch()
 	
     elif getModel(model) == "YOLOv3":
-        configPath = os.path.join("model_data", "yolov3.cfg")
-        modelPath = os.path.join("model_data", "yolov3.weights")
-        classesPath = os.path.join("model_data", "cocoYOLO.names")
+        configPath = os.path.join(root_folder, "yolov3.cfg")
+        modelPath = os.path.join(root_folder, "yolov3.weights")
+        classesPath = os.path.join(root_folder, "cocoYOLO.names")
         modelType = 'YOLOv3'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
@@ -50,9 +52,9 @@ def modelData(videoPath, model):
             detector2.onVideoBatch()
 
     elif getModel(model) == "Cones":
-        configPath = os.path.join("model_data", "yolov3cones.cfg")
-        modelPath = os.path.join("model_data", "yolov3cones.weights")
-        classesPath = os.path.join("model_data", "yolov3cones.names")
+        configPath = os.path.join(root_folder, "yolov3cones.cfg")
+        modelPath = os.path.join(root_folder, "yolov3cones.weights")
+        classesPath = os.path.join(root_folder, "yolov3cones.names")
         modelType = 'Cones'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
@@ -67,9 +69,9 @@ def modelData(videoPath, model):
               detector3.onVideoBatch()
 	
     elif getModel(model) == "Backpack":
-        configPath = os.path.join("model_data", "yolov3-ourmodel.cfg")
-        modelPath = os.path.join("model_data", "yolov3_training_last.weights")
-        classesPath = os.path.join("model_data", "ourmodel.names")
+        configPath = os.path.join(root_folder, "yolov3-ourmodel.cfg")
+        modelPath = os.path.join(root_folder, "yolov3_training_last.weights")
+        classesPath = os.path.join(root_folder, "ourmodel.names")
         modelType = 'Backpack'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
@@ -84,9 +86,9 @@ def modelData(videoPath, model):
               detector4.onVideoBatch()
 	
     elif getModel(model) == "YOLOv3-tiny":
-        configPath = os.path.join("model_data", "yolov3-tiny.cfg")
-        modelPath = os.path.join("model_data", "yolov3-tiny.weights")
-        classesPath = os.path.join("model_data", "cocoYOLO.names")
+        configPath = os.path.join(root_folder, "yolov3-tiny.cfg")
+        modelPath = os.path.join(root_folder, "yolov3-tiny.weights")
+        classesPath = os.path.join(root_folder, "cocoYOLO.names")
         modelType = 'YOLOv3-tiny'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
@@ -330,10 +332,3 @@ for i in range(len(questions_text)):
 if __name__ == '__main__':
 	root.title('Object Tracker GUI')
 	root.mainloop()
-
-
-
-
-
-
-
