@@ -8,6 +8,7 @@ customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 root = customtkinter.CTk()
 
+
 def modelData(videoPath, model):
     vPath = videoPath
     configPath = None
@@ -48,11 +49,11 @@ def modelData(videoPath, model):
         else:
             detector2.onVideoBatch()
 
-    elif getModel(model) == "Cones and Cars":
-        configPath = os.path.join("model_data", "reflective.cfg")
-        modelPath = os.path.join("model_data", "reflective.weights")
-        classesPath = os.path.join("model_data", "reflective.names")
-        modelType = 'Cones and Cars'
+    elif getModel(model) == "Cones":
+        configPath = os.path.join("model_data", "yolov3cones.cfg")
+        modelPath = os.path.join("model_data", "yolov3cones.weights")
+        classesPath = os.path.join("model_data", "yolov3cones.names")
+        modelType = 'Cones'
         confThreshold = conf_slider_var
         sThreshold = sThreshold_slider_var
         nmsThreshold = nmsThreshold_slider_var
@@ -179,7 +180,7 @@ batchSize_slider_var.trace_add("write", lambda name, index, mode, var=batchSize_
 root.sidebar_frame.model_label = customtkinter.CTkLabel(root.sidebar_frame, text="Model", font=("Helvetica", 14), pady=10)
 root.sidebar_frame.model_label.pack(fill="x")
 
-model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Cones and Cars", "Backpack"], command=lambda value: getModel(value))
+model_menu = customtkinter.CTkOptionMenu(root.sidebar_frame, values=["SSD MobileNet", "YOLOv3", "YOLOv3-tiny", "Cones", "Backpack"], command=lambda value: getModel(value))
 model_menu.pack(fill="x", padx=10, pady=(0, 10))
 
 ## CHOOSE THE CONFIDENCE IN SIDE BAR
@@ -270,7 +271,7 @@ tabview2.grid(row=1, column=2, padx=20, pady=(20, 0), sticky="")
 
 ## Reflective recommended settings
 tabview2.add("Our Project")
-reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Our Project"), text="Our Project", font=("Helvetica", 14), pady=10, padx=10)
+reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Our Project"), text="The CIA Labs' Object Tracking and Locating Project is an innovative research initiative focused on developing a comprehensive solution for identifying and tracking objects in a scene. The primary goal is to create a custom model that can effectively recognize objects, assign names to them, and track their movement using bounding boxes. This project aims to leverage existing state-of-the-art models and fuse them with the newly developed model to achieve superior object tracking and locating capabilities, ultimately enhancing situational awareness and intelligence analysis.", font=("Helvetica", 14), wraplength=850, pady=10, padx=10)
 reflective_settings_label.pack(fill="x")
 
 ## SSD Mobilenet recommended settings
@@ -289,8 +290,8 @@ yolov3tiny_settings_label = customtkinter.CTkLabel(tabview2.tab("YOLOv3-tiny"), 
 yolov3tiny_settings_label.pack(fill="x")
 
 ## Reflective recommended settings
-tabview2.add("Cones and Cars")
-reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Cones and Cars"), text="Our Model", font=("Helvetica", 14), pady=10, padx=10)
+tabview2.add("Cones")
+reflective_settings_label = customtkinter.CTkLabel(tabview2.tab("Cones"), text="Our Model\nYOLOv3 is a powerful object detection algorithm, but it requires some tuning to achieve good results. Here are some recommended settings:\n\n- Confidence threshold: 0.5\n- Non-maximum suppression threshold: 0.5\n- Input image size: 416x416\n- Number of channels: 3\n- Mean values: (0,0,0)\n- Scale factor: 0.00392\n\nNote that these settings may vary depending on your specific use case and dataset.", font=("Helvetica", 14), pady=10, padx=10)
 reflective_settings_label.pack(fill="x")
 
 ## Reflective recommended settings
@@ -329,6 +330,8 @@ for i in range(len(questions_text)):
 if __name__ == '__main__':
 	root.title('Object Tracker GUI')
 	root.mainloop()
+
+
 
 
 
