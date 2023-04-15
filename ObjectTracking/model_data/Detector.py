@@ -35,6 +35,14 @@ class Detector:
 		elif self.modelType == 'YOLOv3' or 'YOLOv3-tiny':
 			self.net.setInputScale(98/25000)	# 1.0/127.5 or 98/25000
 			self.net.setInputMean((0,0,0))	# 0,0,0 or 127.5,127.5,127.5
+		
+		elif self.modelType == 'Cones':
+			self.net.setInputScale(1.0/127.5)	# 1.0/127.5 or 98/25000
+			self.net.setInputMean((127.5,127.5,127.5))	# 0,0,0 or 127.5,127.5,127.5
+
+		elif self.modelType == 'Backpack':
+			self.net.setInputScale(98/25000)	# 1.0/127.5 or 98/25000
+			self.net.setInputMean((0,0,0))	# 0,0,0 or 127.5,127.5,127.5
 
 		self.net.setInputSwapRB(True)
 
@@ -59,6 +67,14 @@ class Detector:
 			if '__Background__' in self.classesList:
 				self.classesList.remove('__Background__')
 
+		elif self.modelType == 'Backpack':
+			if '__Background__' in self.classesList:
+				self.classesList.remove('__Background__')
+
+		elif self.modelType == 'Cones':
+			if '__Background__' in self.classesList:
+				self.classesList.remove('__Background__')
+
 		# Generate random colors for each class label
 		self.colorList = np.random.uniform(low=0, high=255, size=(len(self.classesList), 3))
 
@@ -76,8 +92,9 @@ class Detector:
 		#(success, image) = cap.read()
 
 		batch_size = self.batchSize.get() # define the batch size
-
 		frame_buffer = []
+		total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+		processed_frames = 0
 		while True:
     		# read a batch of frames from the input source
 			batch = []
@@ -89,6 +106,11 @@ class Detector:
 			
 			if not batch:
 				break
+
+			# Add the progress update code here
+			processed_frames += len(batch)
+			progress = int((processed_frames / total_frames) * 100)
+			print(f"Progress: {progress}%")
 
 			results = []
 			for image in batch:
@@ -142,10 +164,15 @@ class Detector:
 
 				#cv2.putText(batch[i], "FPS: " + str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0), 2)
 
-				#frame_buffer += batch
 				frame_buffer.append(batch[i])
+				
 		
+		startTime = 0
 		for frame in frame_buffer:
+			currentTime = time.time()
+			fps = 1/(currentTime - startTime)
+			startTime = currentTime
+			cv2.putText(frame, "FPS: " + str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0), 2)
 			cv2.imshow("Result", frame)
 			cv2.waitKey(20)
 
@@ -185,14 +212,14 @@ class Detector:
 
 		# Initialize variables for calculating FPS
 		startTime = 0
-
+		objdetector = cv2.createBackgroundSubtractorMOG2(history=10, varThreshold=20)
 		# Loop through all frames in the video
 		while success:
 			# Calculate FPS for the current frame
 			currentTime = time.time()
 			fps = 1/(currentTime - startTime)
 			startTime = currentTime
-
+			mask = objdetector.apply(image)
 			# Run object detection on the current frame
 			classLabelIDs, confidences, bboxs = self.net.detect(image, self.confThreshold.get())
 
@@ -244,6 +271,7 @@ class Detector:
 
 			cv2.putText(image, "FPS: " + str(int(fps)), (20,70), cv2.FONT_HERSHEY_PLAIN, 2, (0,255,0), 2)
 			cv2.imshow("Result", image)
+			#cv2.imshow("Mask", mask)
 
 			# CHECKS TO SEE IF WEBCAM IS ENABLED
 			if self.videoPath == 0:
@@ -265,4 +293,5 @@ class Detector:
 
 			(success, image) = cap.read()
 		cv2.destroyAllWindows()
+		cap.release()
 				
