@@ -31,6 +31,8 @@ def modelData(videoPath, model):
         detector = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
         if batchValue_var.get() == "Disabled":
             detector.onVideo()
+        elif batchValue_var.get() == "Enabled" and vPath == 0:
+            print("Cant Use Webcam when Batch Processing is Enabled")
         else:
             detector.onVideoBatch()
 	
@@ -48,6 +50,8 @@ def modelData(videoPath, model):
         detector2 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
         if batchValue_var.get() == "Disabled":
             detector2.onVideo()
+        elif batchValue_var.get() == "Enabled" and vPath == 0:
+            print("Cant Use Webcam when Batch Processing is Enabled")
         else:
             detector2.onVideoBatch()
 
@@ -65,6 +69,8 @@ def modelData(videoPath, model):
         detector3 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
         if batchValue_var.get() == "Disabled":
             detector3.onVideo()
+        elif batchValue_var.get() == "Enabled" and vPath == 0:
+            print("Cant Use Webcam when Batch Processing is Enabled")
         else:
               detector3.onVideoBatch()
 	
@@ -82,6 +88,8 @@ def modelData(videoPath, model):
         detector4 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
         if batchValue_var.get() == "Disabled":
             detector4.onVideo()
+        elif batchValue_var.get() == "Enabled" and vPath == 0:
+            print("Cant Use Webcam when Batch Processing is Enabled")
         else:
               detector4.onVideoBatch()
 	
@@ -99,6 +107,8 @@ def modelData(videoPath, model):
         detector5 = Detector(vPath, configPath, modelPath, classesPath, modelType, confThreshold, sThreshold, nmsThreshold, batchSize, inputImageSize, bValue)
         if batchValue_var.get() == "Disabled":
             detector5.onVideo()
+        elif batchValue_var.get() == "Enabled" and vPath == 0:
+            print("Cant Use Webcam when Batch Processing is Enabled")
         else:
               detector5.onVideoBatch()
     
@@ -253,7 +263,7 @@ tabview.tab("Object Tracking Through Webcam").grid_columnconfigure(0, weight=1)
 browse_button = customtkinter.CTkButton(tabview.tab("Object Tracking Through File"), text="Browse", command=clickButton)
 browse_button.grid(row=1, column=0, padx=20, pady=(20, 20), sticky="")
 
-label_tab_2 = customtkinter.CTkLabel(tabview.tab("Object Tracking Through File"), text="Press Q to Stop The Video")
+label_tab_2 = customtkinter.CTkLabel(tabview.tab("Object Tracking Through File"), text="Press Q to Stop The Video\nPress P to Pause The Video\nPress R to Rewind The Video\nPress F to Fast Forward The Video\nHold Spacebar to go Frame by Frame")
 label_tab_2.grid(row=0, column=0, padx=20, pady=20, sticky="")
 
 ## ENTRY FOR OBJECT TRACKING THROUGH INPUT FILE
@@ -332,3 +342,4 @@ for i in range(len(questions_text)):
 if __name__ == '__main__':
 	root.title('Object Tracker GUI')
 	root.mainloop()
+
