@@ -20,10 +20,15 @@ User is able to change Confidence Value, Score Threshold, NMS Threshold and Inpu
 The higher the Input Image size, the more accurate the detection will be
 
 5 Models to choose from:
+
 SSD MobileNet - Pre made model
+
 YoloV3 - Pre made model
+
 YoloV3-tiny - Pre made model
+
 Cones - Our model
+
 Backpack - Our model
 
 
