@@ -34,11 +34,18 @@ Backpack - Our model
 # RESULTS
 
 Without Batch Processing (Bad CPU/GPU)
-https://user-images.githubusercontent.com/79528247/235206205-14ad4cb7-21df-4ead-abff-eb3f2b4918a9.mov
+
+
+
+https://user-images.githubusercontent.com/79528247/235206684-c64d25b2-57dc-4580-91af-749e21bf7e65.mp4
+
 
 With Batch Processing (Bad CPU/GPU)
-https://user-images.githubusercontent.com/79528247/235205695-7216411f-a876-4bc0-bc31-43af95dc582f.mov
 
+
+
+
+https://user-images.githubusercontent.com/79528247/235206651-694d9e7d-5ad0-45e0-b942-a3dc53a55494.mp4
 
 
 
