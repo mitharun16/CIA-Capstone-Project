@@ -16,7 +16,9 @@ pip3 install numpy
 # FEATURES
 
 Batch Processing for lower end CPUs and GPUs
+
 User is able to change Confidence Value, Score Threshold, NMS Threshold and Input Image Size
+
 The higher the Input Image size, the more accurate the detection will be
 
 5 Models to choose from:
