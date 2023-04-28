@@ -31,6 +31,18 @@ Cones - Our model
 
 Backpack - Our model
 
+# RESULTS
+
+Without Batch Processing (Bad CPU/GPU)
+https://user-images.githubusercontent.com/79528247/235206205-14ad4cb7-21df-4ead-abff-eb3f2b4918a9.mov
+
+With Batch Processing (Bad CPU/GPU)
+https://user-images.githubusercontent.com/79528247/235205695-7216411f-a876-4bc0-bc31-43af95dc582f.mov
+
+
+
+
+
 
 # Contraints
 Videos need to be 720p so that it runs at a solid 30fps
